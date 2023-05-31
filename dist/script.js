@@ -99,6 +99,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_sliders__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/sliders */ "./src/js/modules/sliders.js");
 /* harmony import */ var _modules_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/forms */ "./src/js/modules/forms.js");
 /* harmony import */ var _modules_mask__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/mask */ "./src/js/modules/mask.js");
+/* harmony import */ var _modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/checkTextInputs */ "./src/js/modules/checkTextInputs.js");
+
 
 
 
@@ -111,7 +113,46 @@ window.addEventListener('DOMContentLoaded', () => {
   Object(_modules_sliders__WEBPACK_IMPORTED_MODULE_1__["default"])('.main-slider-item', 'vertical');
   Object(_modules_forms__WEBPACK_IMPORTED_MODULE_2__["default"])();
   Object(_modules_mask__WEBPACK_IMPORTED_MODULE_3__["default"])('[name="phone"]');
+  Object(_modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__["default"])('[name="name"]');
+  Object(_modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__["default"])('[name="message"]');
 });
+
+/***/ }),
+
+/***/ "./src/js/modules/checkTextInputs.js":
+/*!*******************************************!*\
+  !*** ./src/js/modules/checkTextInputs.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const checkTextInputs = selector => {
+  const textInputs = document.querySelectorAll(selector);
+  textInputs.forEach(input => {
+    //тільки українські літери та числа (але автозаповненням можно ввести англійські)
+    input.addEventListener('keypress', function (e) {
+      //всі символи від а до я та 0 - 9 в любому регістрі глобально
+      if (e.key.match(/[^а-яіїґє 0-9]/ig)) {
+        e.preventDefault();
+      }
+    });
+
+    //тільки українські літери та числа (автозаповненням не можно ввести англійські)
+    /* input.addEventListener('input', function(e) {
+    	const inputValue = e.target.value;
+    	// Заміна всіх іноземних символів на порожній рядок
+    	const ukrainianOnlyValue = inputValue.replace(/[^а-яіїґєї 0-9]/gi, '');
+    			// Оновлюємо значення інпута з видаленням іноземних символів
+    	if (inputValue !== ukrainianOnlyValue) {
+    		e.target.value = ukrainianOnlyValue;
+    	}
+    }); */
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (checkTextInputs);
 
 /***/ }),
 
@@ -127,7 +168,8 @@ __webpack_require__.r(__webpack_exports__);
 const forms = () => {
   const form = document.querySelectorAll('form'),
     inputs = document.querySelectorAll('input'),
-    upload = document.querySelectorAll('[name="upload"]');
+    upload = document.querySelectorAll('[name="upload"]'),
+    textArea = document.querySelectorAll('[name="message"]');
   const message = {
     loading: 'Йде відправка',
     success: 'Дякуємо за заявку! Невдовзі ми з Вами зв\'яжемось!',
@@ -160,6 +202,9 @@ const forms = () => {
     //очищуємо поле upload (назва завантаженої картинки)
     upload.forEach(item => {
       item.previousElementSibling.textContent = 'Файл не выбран';
+    });
+    textArea.forEach(item => {
+      item.value = '';
     });
   };
   upload.forEach(item => {

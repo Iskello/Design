@@ -1,7 +1,9 @@
 const forms = () => {
 	const form = document.querySelectorAll('form'),
 		inputs = document.querySelectorAll('input'),
-		upload = document.querySelectorAll('[name="upload"]');
+		upload = document.querySelectorAll('[name="upload"]'),
+		textArea = document.querySelectorAll('[name="message"]');
+
 
 		
 	const message = {
@@ -38,6 +40,9 @@ const forms = () => {
 		//очищуємо поле upload (назва завантаженої картинки)
 		upload.forEach(item => {
 			item.previousElementSibling.textContent = 'Файл не выбран';
+		});
+		textArea.forEach(item => {
+			item.value = '';
 		});
 	};
 
@@ -112,7 +117,7 @@ const forms = () => {
 						item.classList.add('fadeInUp');
 
 						//document.body.style.overflow = '';
-					    //document.body.style.marginRight = '0px';
+						//document.body.style.marginRight = '0px';
 						//форма закривається
 						//windows.forEach(item => {
 						//	item.style.display = 'none';							
