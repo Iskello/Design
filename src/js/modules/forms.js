@@ -1,3 +1,5 @@
+import { postData } from '../services/requests';
+
 const forms = () => {
 	const form = document.querySelectorAll('form'),
 		inputs = document.querySelectorAll('input'),
@@ -21,16 +23,7 @@ const forms = () => {
 		designer: 'assets/server.php',
 		question: 'assets/question.php'
 	};
-
-	//Функція відправки запиту на сервер
-	const postData = async (url, data) => {		
-		let res = await fetch(url, {
-			method: 'POST',
-			body: data
-		});
-
-		return await res.text();
-	};
+	
 
 	//Очищення полів форми
 	const clearInputs = () => {

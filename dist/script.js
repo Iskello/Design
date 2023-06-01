@@ -117,7 +117,7 @@ window.addEventListener('DOMContentLoaded', () => {
   Object(_modules_mask__WEBPACK_IMPORTED_MODULE_3__["default"])('[name="phone"]');
   Object(_modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__["default"])('[name="name"]');
   Object(_modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__["default"])('[name="message"]');
-  Object(_modules_showMoreStyles__WEBPACK_IMPORTED_MODULE_5__["default"])('.button-styles', '.styles-2');
+  Object(_modules_showMoreStyles__WEBPACK_IMPORTED_MODULE_5__["default"])('.button-styles', '#styles .row');
 });
 
 /***/ }),
@@ -168,6 +168,8 @@ const checkTextInputs = selector => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _services_requests__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/requests */ "./src/js/services/requests.js");
+
 const forms = () => {
   const form = document.querySelectorAll('form'),
     inputs = document.querySelectorAll('input'),
@@ -186,15 +188,6 @@ const forms = () => {
   const path = {
     designer: 'assets/server.php',
     question: 'assets/question.php'
-  };
-
-  //Функція відправки запиту на сервер
-  const postData = async (url, data) => {
-    let res = await fetch(url, {
-      method: 'POST',
-      body: data
-    });
-    return await res.text();
   };
 
   //Очищення полів форми
@@ -264,7 +257,7 @@ const forms = () => {
       console.log(api);
 
       // відправляємо запит на сервер
-      postData(api, formData).then(res => {
+      Object(_services_requests__WEBPACK_IMPORTED_MODULE_0__["postData"])(api, formData).then(res => {
         console.log(res);
         statusImg.setAttribute('src', message.ok);
         textMessage.textContent = message.success;
@@ -512,19 +505,63 @@ const modals = () => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const showMoreStyles = (trigger, styles) => {
-  const cards = document.querySelectorAll(styles),
-    btn = document.querySelector(trigger);
-  cards.forEach(card => {
-    card.classList.add('animated', 'fadeInUp');
+/* harmony import */ var _services_requests__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/requests */ "./src/js/services/requests.js");
+
+const showMoreStyles = (trigger, wrapper) => {
+  const btn = document.querySelector(trigger);
+
+  //завантаження статичних карток товару (які сховані на сторінці)
+  /* const cards = document.querySelectorAll(styles);
+         cards.forEach(card => {
+  	    card.classList.add('animated', 'fadeInUp');
   });
+  
   btn.addEventListener('click', () => {
-    cards.forEach(card => {
-      card.classList.remove('hidden-lg', 'hidden-md', 'hidden-sm', 'hidden-xs', 'styles-2');
-      card.classList.add('col-sm-3', 'col-sm-offset-0', 'col-xs-10', 'col-xs-offset-1');
+  	cards.forEach(card => {
+  		card.classList.remove('hidden-lg', 'hidden-md', 'hidden-sm', 'hidden-xs', 'styles-2');
+  		card.classList.add('col-sm-3', 'col-sm-offset-0', 'col-xs-10', 'col-xs-offset-1');
+  	});
+  	btn.remove();
+  }); */
+
+  //завантаження динамічних карток товару (вони приходять з серверу) JSON-SERVER
+  btn.addEventListener('click', () => {
+    Object(_services_requests__WEBPACK_IMPORTED_MODULE_0__["getResource"])('http://localhost:3000/styles')
+    //обробляємо проміс
+    .then(res => {
+      createCards(res);
+      btn.remove();
+    }).catch(error => {
+      btn.textContent = 'Нема відповіді від сервера. Неможливо завантажити додаткові стилі.';
+      btn.style.color = 'red';
+      console.log(error);
+      setTimeout(() => {
+        btn.textContent = 'Показати ще стилі';
+        btn.style.color = ''; // Відновити колір тексту до оригінального значення
+      }, 10000);
     });
-    btn.style.display = 'none';
   });
+
+  //Функція, яка конструює верстку
+  function createCards(response) {
+    response.forEach(_ref => {
+      let {
+        src,
+        title,
+        link
+      } = _ref;
+      let card = document.createElement('div');
+      card.classList.add('animated', 'fadeInUp', 'col-sm-3', 'col-sm-offset-0', 'col-xs-10', 'col-xs-offset-1');
+      card.innerHTML = `
+            <div class="styles-block">
+                <img src="${src}" alt="style">
+                <h4>${title}</h4>
+                <a href="${link}">Подробнее</a>
+            </div>
+            `;
+      document.querySelector(wrapper).appendChild(card);
+    });
+  }
 };
 /* harmony default export */ __webpack_exports__["default"] = (showMoreStyles);
 
@@ -620,6 +657,38 @@ const sliders = (slides, direction, prev, next) => {
   });
 };
 /* harmony default export */ __webpack_exports__["default"] = (sliders);
+
+/***/ }),
+
+/***/ "./src/js/services/requests.js":
+/*!*************************************!*\
+  !*** ./src/js/services/requests.js ***!
+  \*************************************/
+/*! exports provided: postData, getResource */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "postData", function() { return postData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResource", function() { return getResource; });
+//Функція відправки запиту на сервер
+const postData = async (url, data) => {
+  let res = await fetch(url, {
+    method: 'POST',
+    body: data
+  });
+  return await res.text();
+};
+
+//Функція для отримання карток товару
+const getResource = async url => {
+  let res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+  }
+  return await res.json();
+};
+
 
 /***/ })
 
