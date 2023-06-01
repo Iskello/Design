@@ -4,7 +4,8 @@ const forms = () => {
 	const form = document.querySelectorAll('form'),
 		inputs = document.querySelectorAll('input'),
 		upload = document.querySelectorAll('[name="upload"]'),
-		textArea = document.querySelectorAll('[name="message"]');
+		textArea = document.querySelectorAll('[name="message"]'),
+		windows = document.querySelectorAll('[data-modal]');
 
 
 		
@@ -110,12 +111,12 @@ const forms = () => {
 						item.classList.remove('fadeOutUp');
 						item.classList.add('fadeInUp');
 
-						//document.body.style.overflow = '';
-						//document.body.style.marginRight = '0px';
+						document.body.style.overflow = '';
+						document.body.style.marginRight = '0px';
 						//форма закривається
-						//windows.forEach(item => {
-						//	item.style.display = 'none';							
-						//});				
+						windows.forEach(item => {
+							item.style.display = 'none';				
+						});				
 					}, 5000);
 				});
 		});

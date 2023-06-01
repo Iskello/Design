@@ -101,6 +101,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_mask__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/mask */ "./src/js/modules/mask.js");
 /* harmony import */ var _modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/checkTextInputs */ "./src/js/modules/checkTextInputs.js");
 /* harmony import */ var _modules_showMoreStyles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/showMoreStyles */ "./src/js/modules/showMoreStyles.js");
+/* harmony import */ var _modules_calc__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/calc */ "./src/js/modules/calc.js");
+
 
 
 
@@ -118,7 +120,53 @@ window.addEventListener('DOMContentLoaded', () => {
   Object(_modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__["default"])('[name="name"]');
   Object(_modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__["default"])('[name="message"]');
   Object(_modules_showMoreStyles__WEBPACK_IMPORTED_MODULE_5__["default"])('.button-styles', '#styles .row');
+  Object(_modules_calc__WEBPACK_IMPORTED_MODULE_6__["default"])('#size', '#material', '#options', '.promocode', '.calc-price');
 });
+
+/***/ }),
+
+/***/ "./src/js/modules/calc.js":
+/*!********************************!*\
+  !*** ./src/js/modules/calc.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const calc = (size, material, options, promocode, result) => {
+  const sizeBlock = document.querySelector(size),
+    materialBlock = document.querySelector(material),
+    optionsBlock = document.querySelector(options),
+    promocodeBlock = document.querySelector(promocode),
+    resultBlock = document.querySelector(result);
+  let sum = 0;
+  const calcFunction = () => {
+    //формула розрахунку
+    sum = Math.round(+sizeBlock.value * +materialBlock.value + +optionsBlock.value);
+
+    //якщо користувач не ввів нічого в перше або друге поле сповіщаємо користувача про це
+    if (sizeBlock.value == '' && materialBlock.value == '') {
+      resultBlock.textContent = 'Для расчета нужно выбрать размер и материал картины';
+      //також перевіряємо промокод
+    } else if (sizeBlock.value == '') {
+      resultBlock.textContent = 'Для расчета нужно выбрать размер картины';
+    } else if (materialBlock.value == '') {
+      resultBlock.textContent = 'Для расчета нужно выбрать материал картины';
+    } else if (promocodeBlock.value === 'IWANTPOPART') {
+      resultBlock.textContent = Math.round(sum * 0.7);
+    } else {
+      resultBlock.textContent = sum;
+    }
+  };
+
+  //кожен раз при виборі якоїсь опції буде виконуватися одна і та ж функція
+  sizeBlock.addEventListener('change', calcFunction);
+  materialBlock.addEventListener('change', calcFunction);
+  optionsBlock.addEventListener('change', calcFunction);
+  promocodeBlock.addEventListener('input', calcFunction);
+};
+/* harmony default export */ __webpack_exports__["default"] = (calc);
 
 /***/ }),
 
@@ -174,7 +222,8 @@ const forms = () => {
   const form = document.querySelectorAll('form'),
     inputs = document.querySelectorAll('input'),
     upload = document.querySelectorAll('[name="upload"]'),
-    textArea = document.querySelectorAll('[name="message"]');
+    textArea = document.querySelectorAll('[name="message"]'),
+    windows = document.querySelectorAll('[data-modal]');
   const message = {
     loading: 'Йде відправка',
     success: 'Дякуємо за заявку! Невдовзі ми з Вами зв\'яжемось!',
@@ -271,13 +320,12 @@ const forms = () => {
           item.style.display = 'block';
           item.classList.remove('fadeOutUp');
           item.classList.add('fadeInUp');
-
-          //document.body.style.overflow = '';
-          //document.body.style.marginRight = '0px';
+          document.body.style.overflow = '';
+          document.body.style.marginRight = '0px';
           //форма закривається
-          //windows.forEach(item => {
-          //	item.style.display = 'none';							
-          //});				
+          windows.forEach(item => {
+            item.style.display = 'none';
+          });
         }, 5000);
       });
     });
