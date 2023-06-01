@@ -46,6 +46,7 @@ const forms = () => {
 		});
 	};
 
+	//Назва завантаженої картинки обрізається до 10 символів перед розширенням файлу
 	upload.forEach(item => {
 		item.addEventListener('input', () => {
 			console.log(item.files[0]);
