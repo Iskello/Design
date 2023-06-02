@@ -60,9 +60,36 @@ const calc = (size, material, options, promocode, result) => {
 		}
 	};
 
+
+	//Функція по назначенню обробника подій для option	
+	const watchChanges = (option, arrayName) => {
+		option.addEventListener('change', () => {
+			Array.from(option.children).forEach((item, i) => {
+				getResource('http://localhost:3000/prices')
+					.then(res => {
+						const arr = res[0][arrayName]; // динамічна назву масиву, береться вказаний массив з db.json
+						if (item.value === option.value) {
+							/* console.log(arr[i]); */ 
+							item.setAttribute('value', arr[i]);
+							calcFunction();
+						}
+					})
+					.catch(error => console.log(error));
+			});
+		});
+	};
+	
+	watchChanges(sizeBlock, 'sizes');
+	watchChanges(materialBlock, 'material');
+	watchChanges(optionsBlock, 'option');
+	promocodeBlock.addEventListener('input', calcFunction);
 	
 
-	sizeBlock.addEventListener('change', () => {
+	
+
+	
+
+	/* sizeBlock.addEventListener('change', () => {
 		Array.from(sizeBlock.children).forEach((item, i) => {			
 			getResource('http://localhost:3000/prices')
 				.then(res => {
@@ -77,10 +104,10 @@ const calc = (size, material, options, promocode, result) => {
 				.catch(error => console.log(error));
 			
 		});
-	});
+	}); */
 
 
-	materialBlock.addEventListener('change', () => {
+	/* materialBlock.addEventListener('change', () => {
 		Array.from(materialBlock.children).forEach((item, i) => {			
 			getResource('http://localhost:3000/prices')
 				.then(res => {
@@ -95,10 +122,10 @@ const calc = (size, material, options, promocode, result) => {
 				.catch(error => console.log(error));
 			
 		});
-	});
+	}); */
 
 
-	optionsBlock.addEventListener('change', () => {
+	/* optionsBlock.addEventListener('change', () => {
 		Array.from(optionsBlock.children).forEach((item, i) => {
 			
 			getResource('http://localhost:3000/prices')
@@ -115,12 +142,9 @@ const calc = (size, material, options, promocode, result) => {
 				.catch(error => console.log(error));
 			
 		});
-	});
+	}); */
 
-	promocodeBlock.addEventListener('input', calcFunction);
-
-
-
+	
 	
 };
 

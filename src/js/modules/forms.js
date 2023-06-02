@@ -6,9 +6,8 @@ const forms = () => {
 		upload = document.querySelectorAll('[name="upload"]'),
 		textArea = document.querySelectorAll('[name="message"]'),
 		windows = document.querySelectorAll('[data-modal]');
-
-
-		
+	
+			
 	const message = {
 		loading: 'Йде відправка',
 		success: 'Дякуємо за заявку! Невдовзі ми з Вами зв\'яжемось!',
@@ -92,6 +91,7 @@ const forms = () => {
 			item.closest('.popup-design') || item.classList.contains('calc_form') ? api = path.designer : api = path.question;
 			console.log(api);
 
+			
 			// відправляємо запит на сервер
 			postData(api, formData)
 				.then(res => {

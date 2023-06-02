@@ -189,44 +189,81 @@ const calc = (size, material, options, promocode, result) => {
       resultBlock.textContent = sum;
     }
   };
-  sizeBlock.addEventListener('change', () => {
-    Array.from(sizeBlock.children).forEach((item, i) => {
-      Object(_services_requests__WEBPACK_IMPORTED_MODULE_0__["getResource"])('http://localhost:3000/prices').then(res => {
-        const sizes = res[0].sizes;
-        if (item.value === sizeBlock.value) {
-          console.log(sizes[i]); // Вивести відповідне значення
-          item.setAttribute('value', sizes[i]);
-          calcFunction();
-        }
-      }).catch(error => console.log(error));
+
+  //Функція по назначенню обробника подій для option	
+  const watchChanges = (option, arrayName) => {
+    option.addEventListener('change', () => {
+      Array.from(option.children).forEach((item, i) => {
+        Object(_services_requests__WEBPACK_IMPORTED_MODULE_0__["getResource"])('http://localhost:3000/prices').then(res => {
+          const arr = res[0][arrayName]; // динамічна назву масиву, береться вказаний массив з db.json
+          if (item.value === option.value) {
+            /* console.log(arr[i]); */
+            item.setAttribute('value', arr[i]);
+            calcFunction();
+          }
+        }).catch(error => console.log(error));
+      });
     });
-  });
-  materialBlock.addEventListener('change', () => {
-    Array.from(materialBlock.children).forEach((item, i) => {
-      Object(_services_requests__WEBPACK_IMPORTED_MODULE_0__["getResource"])('http://localhost:3000/prices').then(res => {
-        const material = res[0].material;
-        if (item.value === materialBlock.value) {
-          console.log(material[i]); // Вивести відповідне значення
-          item.setAttribute('value', material[i]);
-          calcFunction();
-        }
-      }).catch(error => console.log(error));
-    });
-  });
-  optionsBlock.addEventListener('change', () => {
-    Array.from(optionsBlock.children).forEach((item, i) => {
-      Object(_services_requests__WEBPACK_IMPORTED_MODULE_0__["getResource"])('http://localhost:3000/prices').then(res => {
-        const option = res[0].option;
-        if (item.value === optionsBlock.value) {
-          console.log(option[i]); // Вивести відповідне значення
-          item.setAttribute('value', option[i]);
-          calcFunction();
-        }
-      }).catch(error => console.log(error));
-    });
-  });
+  };
+  watchChanges(sizeBlock, 'sizes');
+  watchChanges(materialBlock, 'material');
+  watchChanges(optionsBlock, 'option');
   promocodeBlock.addEventListener('input', calcFunction);
+
+  /* sizeBlock.addEventListener('change', () => {
+  	Array.from(sizeBlock.children).forEach((item, i) => {			
+  		getResource('http://localhost:3000/prices')
+  			.then(res => {
+  				const sizes = res[0].sizes;
+       
+  				if (item.value === sizeBlock.value) {
+  					console.log(sizes[i]); // Вивести відповідне значення
+  					item.setAttribute('value', sizes[i]);
+  					calcFunction();
+  				}
+  			})
+  			.catch(error => console.log(error));
+  		
+  	});
+  }); */
+
+  /* materialBlock.addEventListener('change', () => {
+  	Array.from(materialBlock.children).forEach((item, i) => {			
+  		getResource('http://localhost:3000/prices')
+  			.then(res => {
+  				const material = res[0].material;
+       
+  				if (item.value === materialBlock.value) {
+  					console.log(material[i]); // Вивести відповідне значення
+  					item.setAttribute('value', material[i]);
+  					calcFunction();
+  				}
+  			})
+  			.catch(error => console.log(error));
+  		
+  	});
+  }); */
+
+  /* optionsBlock.addEventListener('change', () => {
+  	Array.from(optionsBlock.children).forEach((item, i) => {
+  		
+  		getResource('http://localhost:3000/prices')
+  			.then(res => {
+  				const option = res[0].option;
+       
+  				if (item.value === optionsBlock.value) {
+  					console.log(option[i]); // Вивести відповідне значення
+  					item.setAttribute('value', option[i]);
+  					calcFunction();
+  				}
+  				
+  			})
+  			.catch(error => console.log(error));
+  		
+  	});
+  }); */
 };
+
 /* harmony default export */ __webpack_exports__["default"] = (calc);
 
 /***/ }),
