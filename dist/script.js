@@ -103,6 +103,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_showMoreStyles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/showMoreStyles */ "./src/js/modules/showMoreStyles.js");
 /* harmony import */ var _modules_calc__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/calc */ "./src/js/modules/calc.js");
 /* harmony import */ var _modules_filter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/filter */ "./src/js/modules/filter.js");
+/* harmony import */ var _modules_pictureSize__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/pictureSize */ "./src/js/modules/pictureSize.js");
+/* harmony import */ var _modules_accordion__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/accordion */ "./src/js/modules/accordion.js");
+
+
 
 
 
@@ -124,7 +128,132 @@ window.addEventListener('DOMContentLoaded', () => {
   Object(_modules_showMoreStyles__WEBPACK_IMPORTED_MODULE_5__["default"])('.button-styles', '#styles .row');
   Object(_modules_calc__WEBPACK_IMPORTED_MODULE_6__["default"])('#size', '#material', '#options', '.promocode', '.calc-price');
   Object(_modules_filter__WEBPACK_IMPORTED_MODULE_7__["default"])();
+  Object(_modules_pictureSize__WEBPACK_IMPORTED_MODULE_8__["default"])('.sizes-block');
+  Object(_modules_accordion__WEBPACK_IMPORTED_MODULE_9__["default"])('.accordion-heading', '.accordion-block');
 });
+
+/***/ }),
+
+/***/ "./src/js/modules/accordion.js":
+/*!*************************************!*\
+  !*** ./src/js/modules/accordion.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const accordion = (triggersSelector, itemsSelector) => {
+  const btns = document.querySelectorAll(triggersSelector),
+    blocks = document.querySelectorAll(itemsSelector);
+
+  //назначаємо кожному блоку анімацію
+  blocks.forEach(block => {
+    //block.style.display = 'none';
+    block.classList.add('animated', 'fadeInDown');
+  });
+
+  //для кожної кнопки назначаємо обробник події
+  btns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      //перевірка, чи є кнопка активною. Якщо кнопка не активна активуємо
+      if (!this.classList.contains('active')) {
+        //всі інші кнопки стають неактивними
+        btns.forEach(btn => {
+          btn.classList.remove('active', 'active-style');
+        });
+        //blocks.forEach(block => block.style.display = 'none');			
+
+        this.classList.add('active', 'active-style');
+        // наступний елемент показуємо				
+        //this.nextElementSibling.style.display = 'block';				
+      } else {
+        this.classList.remove('active', 'active-style');
+        // наступний елемент ховаємо				
+        //this.nextElementSibling.style.display = 'none';				
+      }
+    });
+  });
+
+  /* //варіант без класу активності, активність на інших блоках не змінюється
+  btns.forEach(btn => {
+  	btn.addEventListener('click', function() {
+  		//перевірка, чи є кнопка активною. Якщо кнопка не активна активуємо
+  		if (!this.classList.contains('active')) {
+  			
+  			//blocks.forEach(block => block.style.display = 'none');			
+  			
+  			this.classList.add('active');
+  			// наступний елемент показуємо				
+  			//this.nextElementSibling.style.display = 'block';				
+  		} else {
+  			this.classList.remove('active');
+  			// наступний елемент ховаємо				
+  			//this.nextElementSibling.style.display = 'none';				
+  		}
+  
+  	});
+  }); */
+
+  //варіант без css, активність на інших блоках не змінюється (СТИЛІ В css ТРЕБА ВИДАЛИТИ)
+  /* btns.forEach(btn => {
+  	btn.addEventListener('click', function() {
+  		//перевірка, чи є кнопка активною. Якщо кнопка не активна активуємо
+  		if (!this.classList.contains('active')) {
+  			this.classList.add('active');
+  			// наступний елемент показуємо				
+  			this.nextElementSibling.style.display = 'block';				
+  		} else {
+  			this.classList.remove('active');
+  			// наступний елемент ховаємо				
+  			this.nextElementSibling.style.display = 'none';				
+  		}
+  
+  	});
+  }); */
+
+  //ІНШИЙ ВАРІАНТ АКОРДЕОНА (НЕ ЗАБУТИ ЗМІНИТИ СТИЛІ В СSS - .often-questions .accordion-block)
+
+  /* const btns = document.querySelectorAll(triggersSelector); */
+
+  //при натисканні на 1 елемент інші не ховаються
+  /* btns.forEach(btn => {
+  	btn.addEventListener('click', function() {			
+  		this.classList.toggle('active-style');
+  		this.nextElementSibling.classList.toggle('active-content');
+  
+  		if(this.classList.contains('active-style')) {
+  			this.nextElementSibling.style.maxHeight = this.nextElementSibling.scrollHeight + 80 + 'px';
+  		} else {
+  			this.nextElementSibling.style.maxHeight = '0px';
+  		}
+  	});
+  }); */
+
+  //при натисканні на один елемент, інші ховаються	
+  /* btns.forEach(btn => {
+  	btn.addEventListener('click', function() {
+  		const isActive = this.classList.contains('active-style');
+  		
+  
+  		btns.forEach(btn => {
+  			btn.classList.remove('active-style');
+  			btn.nextElementSibling.classList.remove('active-content');
+  			btn.nextElementSibling.style.maxHeight = '0px';
+  		});
+  
+  		if (!isActive) {
+  			this.classList.add('active-style');
+  			this.nextElementSibling.classList.add('active-content');
+  			this.nextElementSibling.style.maxHeight = this.nextElementSibling.scrollHeight + 80 + 'px';
+  		} else {
+  			this.nextElementSibling.style.maxHeight = '0px';
+  		}
+  	});
+  }); */
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (accordion);
 
 /***/ }),
 
@@ -757,6 +886,48 @@ const modals = () => {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (modals);
+
+/***/ }),
+
+/***/ "./src/js/modules/pictureSize.js":
+/*!***************************************!*\
+  !*** ./src/js/modules/pictureSize.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const pictureSize = imgSelector => {
+  const blocks = document.querySelectorAll(imgSelector);
+  function showImg(block) {
+    const img = block.querySelector('img');
+    // something.png => something-1.png
+    //slice(0, -4) відрізає 4 символи з кінця, а потім додаємо необхідні символи;
+    img.src = img.src.slice(0, -4) + '-1.png';
+    block.querySelectorAll('p:not(.sizes-hit)').forEach(p => {
+      p.style.display = 'none';
+    });
+  }
+  function hideImg(block) {
+    const img = block.querySelector('img');
+    // something-1.png => something.png
+    //slice(0, -6) відрізає 6 символів з кінця, а потім додаємо необхідні символи;
+    img.src = img.src.slice(0, -6) + '.png';
+    block.querySelectorAll('p:not(.sizes-hit)').forEach(p => {
+      p.style.display = 'block';
+    });
+  }
+  blocks.forEach(block => {
+    block.addEventListener('mouseover', () => {
+      showImg(block);
+    });
+    block.addEventListener('mouseout', () => {
+      hideImg(block);
+    });
+  });
+};
+/* harmony default export */ __webpack_exports__["default"] = (pictureSize);
 
 /***/ }),
 
