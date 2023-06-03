@@ -102,6 +102,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/checkTextInputs */ "./src/js/modules/checkTextInputs.js");
 /* harmony import */ var _modules_showMoreStyles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/showMoreStyles */ "./src/js/modules/showMoreStyles.js");
 /* harmony import */ var _modules_calc__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/calc */ "./src/js/modules/calc.js");
+/* harmony import */ var _modules_filter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/filter */ "./src/js/modules/filter.js");
+
 
 
 
@@ -121,6 +123,7 @@ window.addEventListener('DOMContentLoaded', () => {
   Object(_modules_checkTextInputs__WEBPACK_IMPORTED_MODULE_4__["default"])('[name="message"]');
   Object(_modules_showMoreStyles__WEBPACK_IMPORTED_MODULE_5__["default"])('.button-styles', '#styles .row');
   Object(_modules_calc__WEBPACK_IMPORTED_MODULE_6__["default"])('#size', '#material', '#options', '.promocode', '.calc-price');
+  Object(_modules_filter__WEBPACK_IMPORTED_MODULE_7__["default"])();
 });
 
 /***/ }),
@@ -129,13 +132,21 @@ window.addEventListener('DOMContentLoaded', () => {
 /*!********************************!*\
   !*** ./src/js/modules/calc.js ***!
   \********************************/
-/*! exports provided: default */
+/*! exports provided: default, calculation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calculation", function() { return calculation; });
 /* harmony import */ var _services_requests__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/requests */ "./src/js/services/requests.js");
 
+let calculation = {
+  size: '',
+  material: '',
+  options: '',
+  promocode: '',
+  result: ''
+};
 const calc = (size, material, options, promocode, result) => {
   const sizeBlock = document.querySelector(size),
     materialBlock = document.querySelector(material),
@@ -170,6 +181,15 @@ const calc = (size, material, options, promocode, result) => {
   optionsBlock.addEventListener('change', calcFunction);
   promocodeBlock.addEventListener('input', calcFunction); */
 
+  // Функція для оновлення об'єкта calculation
+  const updateCalculation = () => {
+    calculation.size = sizeBlock.options[sizeBlock.selectedIndex].textContent;
+    calculation.material = materialBlock.options[materialBlock.selectedIndex].textContent;
+    calculation.options = optionsBlock.options[optionsBlock.selectedIndex].textContent;
+    calculation.promocode = promocodeBlock.value.trim().toLowerCase();
+    calculation.result = resultBlock.textContent;
+  };
+
   //динамічний калькулятор !ВАЖЛИВО! В HTML обов'язково повинен бути атрибут value (без значення) у кожного option
   const calcFunction = () => {
     //формула розрахунку
@@ -188,6 +208,8 @@ const calc = (size, material, options, promocode, result) => {
     } else {
       resultBlock.textContent = sum;
     }
+    updateCalculation();
+    console.log(calculation);
   };
 
   //Функція по назначенню обробника подій для option	
@@ -266,6 +288,7 @@ const calc = (size, material, options, promocode, result) => {
 
 /* harmony default export */ __webpack_exports__["default"] = (calc);
 
+
 /***/ }),
 
 /***/ "./src/js/modules/checkTextInputs.js":
@@ -281,27 +304,107 @@ const checkTextInputs = selector => {
   const textInputs = document.querySelectorAll(selector);
   textInputs.forEach(input => {
     //тільки українські літери та числа (але автозаповненням можно ввести англійські)
-    input.addEventListener('keypress', function (e) {
-      //всі символи від а до я та 0 - 9 в любому регістрі глобально
-      if (e.key.match(/[^а-яіїґє 0-9]/ig)) {
-        e.preventDefault();
-      }
-    });
-
-    //тільки українські літери та числа (автозаповненням не можно ввести англійські)
-    /* input.addEventListener('input', function(e) {
-    	const inputValue = e.target.value;
-    	// Заміна всіх іноземних символів на порожній рядок
-    	const ukrainianOnlyValue = inputValue.replace(/[^а-яіїґєї 0-9]/gi, '');
-    			// Оновлюємо значення інпута з видаленням іноземних символів
-    	if (inputValue !== ukrainianOnlyValue) {
-    		e.target.value = ukrainianOnlyValue;
+    /* input.addEventListener('keypress', function(e) {
+    	//всі символи від а до я та 0 - 9 в любому регістрі глобально
+    	if (e.key.match(/[^а-яіїґє 0-9]/ig)) {
+    		e.preventDefault();
     	}
     }); */
+
+    //тільки українські літери та числа (автозаповненням не можно ввести англійські)
+    input.addEventListener('input', function (e) {
+      const inputValue = e.target.value;
+      // Заміна всіх іноземних символів на порожній рядок
+      const ukrainianOnlyValue = inputValue.replace(/[^а-яіїґєї 0-9]/gi, '');
+
+      // Оновлюємо значення інпута з видаленням іноземних символів
+      if (inputValue !== ukrainianOnlyValue) {
+        e.target.value = ukrainianOnlyValue;
+      }
+    });
   });
 };
-
 /* harmony default export */ __webpack_exports__["default"] = (checkTextInputs);
+
+/***/ }),
+
+/***/ "./src/js/modules/filter.js":
+/*!**********************************!*\
+  !*** ./src/js/modules/filter.js ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const filter = () => {
+  const menu = document.querySelector('.portfolio-menu'),
+    items = menu.querySelectorAll('li'),
+    wrapper = document.querySelector('.portfolio-wrapper'),
+    markAll = wrapper.querySelectorAll('.all'),
+    no = document.querySelector('.portfolio-no');
+
+  //Загальна функція по фільтрації елементів
+  const typeFilter = markType => {
+    //ховаємо всі елементи
+    markAll.forEach(mark => {
+      mark.style.display = 'none';
+      mark.classList.remove('animated', 'fadeIn');
+    });
+    no.style.display = 'none';
+    no.classList.remove('animated', 'fadeIn');
+
+    //якщо ми передаємо в функцію аргумент markType, показуємо відповідні елементи, якщо елементів при фільтрації нема - показуємо .portfolio-no
+    if (markType.length > 0) {
+      markType.forEach(mark => {
+        mark.style.display = 'block';
+        mark.classList.add('animated', 'fadeIn');
+      });
+    } else {
+      no.style.display = 'block';
+      no.classList.add('animated', 'fadeIn');
+    }
+  };
+
+  //Функція по зміні класу активності для кнопок
+  /* const btnActive = (btn) => {
+  	items.forEach(item => {
+  		item.classList.remove('active');
+  		item.classList.remove('animated', 'fadeIn');
+  	});
+  
+  	btn.classList.add('active');
+  	btn.classList.add('animated', 'fadeIn');
+  }; */
+
+  //Функція по зміні класу активності для кнопок З ДЕЛЕГУВАННЯМ ПОДІЙ
+  menu.addEventListener('click', e => {
+    let target = e.target;
+    if (target && target.tagName == 'LI') {
+      items.forEach(btn => btn.classList.remove('active'));
+      target.classList.add('active');
+    }
+  });
+
+  //Загальна функція по навішуванню обробників події
+  const btnSwitch = selector => {
+    const btn = menu.querySelector(selector),
+      mark = wrapper.querySelectorAll(selector);
+    btn.addEventListener('click', () => {
+      typeFilter(mark);
+      /* btnActive(btn); */
+    });
+  };
+
+  btnSwitch('.all');
+  btnSwitch('.lovers');
+  btnSwitch('.girl');
+  btnSwitch('.guy');
+  btnSwitch('.chef');
+  btnSwitch('.grandmother');
+  btnSwitch('.granddad');
+};
+/* harmony default export */ __webpack_exports__["default"] = (filter);
 
 /***/ }),
 
@@ -315,6 +418,8 @@ const checkTextInputs = selector => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_requests__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/requests */ "./src/js/services/requests.js");
+/* harmony import */ var _calc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./calc */ "./src/js/modules/calc.js");
+
 
 const forms = () => {
   const form = document.querySelectorAll('form'),
@@ -397,6 +502,19 @@ const forms = () => {
 
       //збираємо дані з форми
       const formData = new FormData(item);
+
+      //ВАРІАНТ 1. Дані з калькулятора відправляються тільки при відпраці відповідної форми
+      // Перевіряємо, чи це форма калькулятора
+      if (item.classList.contains('calc_form')) {
+        // Відправляємо сформований об'єкт з калькулятора
+        formData.append('calculation', JSON.stringify(_calc__WEBPACK_IMPORTED_MODULE_1__["calculation"]));
+      }
+
+      //ВАРІАНТ 2. Дані з калькулятора посилаємо з любою формою, але маркуємо, яку форму відправив користувач
+      /* // Додаємо параметр для відмітки типу форми
+      formData.append('formType', item.classList.contains('calc_form') ? 'calculator' : 'regular');
+      formData.append('calculation', JSON.stringify(calculation)); */
+
       //формуємо динамічний шлях для відправки
       let api;
       //шукаємо блок popup-design вище по ієрархії або класс calc_form, при знаходженні посилаємо на адресу дизайнера, в інших випадках на іншу адресу

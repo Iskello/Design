@@ -1,4 +1,5 @@
 import { postData } from '../services/requests';
+import { calculation } from './calc';
 
 const forms = () => {
 	const form = document.querySelectorAll('form'),
@@ -85,6 +86,19 @@ const forms = () => {
 
 			//збираємо дані з форми
 			const formData = new FormData(item);
+			
+			//ВАРІАНТ 1. Дані з калькулятора відправляються тільки при відпраці відповідної форми
+			// Перевіряємо, чи це форма калькулятора
+			if (item.classList.contains('calc_form')) {
+				// Відправляємо сформований об'єкт з калькулятора
+				formData.append('calculation', JSON.stringify(calculation));
+			}
+
+			//ВАРІАНТ 2. Дані з калькулятора посилаємо з любою формою, але маркуємо, яку форму відправив користувач
+			/* // Додаємо параметр для відмітки типу форми
+			formData.append('formType', item.classList.contains('calc_form') ? 'calculator' : 'regular');
+			formData.append('calculation', JSON.stringify(calculation)); */
+
 			//формуємо динамічний шлях для відправки
 			let api;
 			//шукаємо блок popup-design вище по ієрархії або класс calc_form, при знаходженні посилаємо на адресу дизайнера, в інших випадках на іншу адресу

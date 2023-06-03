@@ -1,5 +1,15 @@
 import { getResource } from '../services/requests';
 
+
+
+let calculation = {
+	size: '',
+	material: '',
+	options: '',
+	promocode: '',
+	result: ''
+};
+
 const calc = (size, material, options, promocode, result) => {
 	const sizeBlock = document.querySelector(size),
 		materialBlock = document.querySelector(material),
@@ -37,11 +47,19 @@ const calc = (size, material, options, promocode, result) => {
 
 
 
+	// Функція для оновлення об'єкта calculation
+	const updateCalculation = () => {
+		calculation.size = sizeBlock.options[sizeBlock.selectedIndex].textContent;
+		calculation.material = materialBlock.options[materialBlock.selectedIndex].textContent;
+		calculation.options = optionsBlock.options[optionsBlock.selectedIndex].textContent;
+		calculation.promocode = promocodeBlock.value.trim().toLowerCase();
+		calculation.result = resultBlock.textContent;
+	};
 
 
 
 	//динамічний калькулятор !ВАЖЛИВО! В HTML обов'язково повинен бути атрибут value (без значення) у кожного option
-	const calcFunction = () => {
+	const calcFunction = () => {		
 		//формула розрахунку
 		sum = Math.round((+sizeBlock.value) * (+materialBlock.value) + (+optionsBlock.value));
 
@@ -58,6 +76,9 @@ const calc = (size, material, options, promocode, result) => {
 		} else {
 			resultBlock.textContent = sum;
 		}
+
+		updateCalculation();
+		console.log(calculation);
 	};
 
 
@@ -83,6 +104,7 @@ const calc = (size, material, options, promocode, result) => {
 	watchChanges(materialBlock, 'material');
 	watchChanges(optionsBlock, 'option');
 	promocodeBlock.addEventListener('input', calcFunction);
+	
 	
 
 	
@@ -149,3 +171,4 @@ const calc = (size, material, options, promocode, result) => {
 };
 
 export default calc;
+export {calculation};
