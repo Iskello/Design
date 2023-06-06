@@ -54,6 +54,21 @@ const forms = () => {
 			const name = arr[0].substring(0, 9) + dots + arr[1];
 			//отримуємо елемент "файл не вибран" - це попередній елемент до 
 			item.previousElementSibling.textContent = name;
+
+
+			//ВІДПРАВКА ФАЙЛУ НА СЕРВЕР ВІДРАЗУ ПРИ ВИБОРІ ФАЙЛУ (ПРИ НАТИСКАННІ)
+			// Отримуємо файл
+			const file = item.files[0];
+			//Посилаємо його на сервер відразу
+			const formData = new FormData();
+			formData.append('file', file);
+			postData('assets/server.php', formData)
+				.then(res => {
+					console.log(res);
+				})
+				.catch((error) => {
+					console.error(error);
+				});
 		});
 	});
 

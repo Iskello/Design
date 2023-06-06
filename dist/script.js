@@ -106,6 +106,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_pictureSize__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/pictureSize */ "./src/js/modules/pictureSize.js");
 /* harmony import */ var _modules_accordion__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/accordion */ "./src/js/modules/accordion.js");
 /* harmony import */ var _modules_burger__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/burger */ "./src/js/modules/burger.js");
+/* harmony import */ var _modules_scrolling__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/scrolling */ "./src/js/modules/scrolling.js");
+/* harmony import */ var _modules_drop__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/drop */ "./src/js/modules/drop.js");
+
+
 
 
 
@@ -133,6 +137,8 @@ window.addEventListener('DOMContentLoaded', () => {
   Object(_modules_pictureSize__WEBPACK_IMPORTED_MODULE_8__["default"])('.sizes-block');
   Object(_modules_accordion__WEBPACK_IMPORTED_MODULE_9__["default"])('.accordion-heading', '.accordion-block');
   Object(_modules_burger__WEBPACK_IMPORTED_MODULE_10__["default"])('.burger-menu', '.burger');
+  Object(_modules_scrolling__WEBPACK_IMPORTED_MODULE_11__["default"])('.pageup');
+  Object(_modules_drop__WEBPACK_IMPORTED_MODULE_12__["default"])();
 });
 
 /***/ }),
@@ -490,6 +496,101 @@ const checkTextInputs = selector => {
 
 /***/ }),
 
+/***/ "./src/js/modules/drop.js":
+/*!********************************!*\
+  !*** ./src/js/modules/drop.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _services_requests__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/requests */ "./src/js/services/requests.js");
+
+const drop = () => {
+  //drag *
+  //dragend *
+  //dragenter - об'єкт входить в dropArea
+  //dragexit *
+  //dragleave - об'єкт за межами dropArea
+  //dragover - об'єкт над dropArea
+  //dragstart *
+  //drop - об'єкт скидується в зону перетягування
+
+  const fileInputs = document.querySelectorAll('[name="upload"]');
+
+  //на кожні inputs повісити обробники подій. Так як подій багато, створюємо масив з подіями і перебираємо його
+  ['dragenter', 'dragleave', 'dragover', 'drop'].forEach(eventName => {
+    fileInputs.forEach(input => {
+      input.addEventListener(eventName, preventDefaults, false);
+    });
+  });
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  //індикатор, що користувач перетаскує елемент над областю
+  function highlight(item) {
+    //ми працюємо з input, а нам треба підсвітити батьківський елемент
+    item.closest('.file_upload').style.border = '5px solid yellow';
+    item.closest('.file_upload').style.backgroundColor = 'rgba(0,0,0, .7)';
+  }
+  function unhighlight(item) {
+    //ми працюємо з input, а нам треба підсвітити батьківський елемент
+    item.closest('.file_upload').style.border = 'none';
+    if (item.closest('.calc_form')) {
+      item.closest('.file_upload').style.backgroundColor = '#fff';
+    } else {
+      item.closest('.file_upload').style.backgroundColor = '#ededed';
+    }
+  }
+  ['dragenter', 'dragover'].forEach(eventName => {
+    fileInputs.forEach(input => {
+      input.addEventListener(eventName, () => highlight(input), false);
+    });
+  });
+  ['dragleave', 'drop'].forEach(eventName => {
+    fileInputs.forEach(input => {
+      input.addEventListener(eventName, () => unhighlight(input), false);
+    });
+  });
+  fileInputs.forEach(input => {
+    input.addEventListener('drop', e => {
+      //dataTransfer - об'єкт з файлом, який ми переміщуємо
+      input.files = e.dataTransfer.files;
+      console.log(input.files[0]);
+
+      //Функціонал, коли велике ім'я, то показує ...
+      let dots;
+      //розбиваємо рядок з ім'ям на 2 частини
+      // 'name.jpg' => [name , jpg]
+      const arr = input.files[0].name.split('.');
+      //звертаємося до першої частини, якщо довжина більше 10 символів то далі пишемо три крапки
+      arr[0].length > 9 ? dots = '...' : dots = '.';
+      //ім'я файлу з 0 по 10 символ, крапка/трикрапки, друга частина імені (розширення)
+      const name = arr[0].substring(0, 9) + dots + arr[1];
+      //отримуємо елемент "файл не вибран" - це попередній елемент до 
+      input.previousElementSibling.textContent = name;
+
+      //ВІДПРАВКА ФАЙЛУ НА СЕРВЕР ВІДРАЗУ ПРИ ПЕРЕТЯГУВАННІ
+      // Отримуємо файл з події перетягування
+      const file = e.dataTransfer.files[0];
+      //Посилаємо його на сервер відразу
+      const formData = new FormData();
+      formData.append('file', file);
+      Object(_services_requests__WEBPACK_IMPORTED_MODULE_0__["postData"])('assets/server.php', formData).then(res => {
+        console.log(res);
+      }).catch(error => {
+        console.error(error);
+      });
+    });
+  });
+};
+/* harmony default export */ __webpack_exports__["default"] = (drop);
+
+/***/ }),
+
 /***/ "./src/js/modules/filter.js":
 /*!**********************************!*\
   !*** ./src/js/modules/filter.js ***!
@@ -632,6 +733,18 @@ const forms = () => {
       const name = arr[0].substring(0, 9) + dots + arr[1];
       //отримуємо елемент "файл не вибран" - це попередній елемент до 
       item.previousElementSibling.textContent = name;
+
+      //ВІДПРАВКА ФАЙЛУ НА СЕРВЕР ВІДРАЗУ ПРИ ВИБОРІ ФАЙЛУ (ПРИ НАТИСКАННІ)
+      // Отримуємо файл
+      const file = item.files[0];
+      //Посилаємо його на сервер відразу
+      const formData = new FormData();
+      formData.append('file', file);
+      Object(_services_requests__WEBPACK_IMPORTED_MODULE_0__["postData"])('assets/server.php', formData).then(res => {
+        console.log(res);
+      }).catch(error => {
+        console.error(error);
+      });
     });
   });
 
@@ -961,6 +1074,126 @@ const pictureSize = imgSelector => {
   });
 };
 /* harmony default export */ __webpack_exports__["default"] = (pictureSize);
+
+/***/ }),
+
+/***/ "./src/js/modules/scrolling.js":
+/*!*************************************!*\
+  !*** ./src/js/modules/scrolling.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const scrolling = upSelector => {
+  const upElem = document.querySelector(upSelector);
+  window.addEventListener('scroll', () => {
+    if (document.documentElement.scrollTop > 1650) {
+      upElem.classList.add('animated', 'fadeIn');
+      upElem.classList.remove('fadeOut');
+    } else {
+      upElem.classList.add('fadeOut');
+      upElem.classList.remove('fadeIn');
+    }
+  });
+
+  //Pure JS scrolling
+  /* const element = document.documentElement,
+  	body = document.body;
+  
+  const calcScroll = () => {
+  	upElem.addEventListener('click', function(event) {
+  		// Отримуємо поточне значення, скільки вже відлистали
+  		let scrollTop = Math.round(body.scrollTop || element.scrollTop);
+  
+  		if(this.hash !== '') {
+  			event.preventDefault();
+  			// Знаходимо елемент з відповідним хешем
+  			let hashElement = document.querySelector(this.hash),
+  				hashElementTop = 0;
+  
+  			//перебирає всіх батьків елемента і обчислює висоту, на яку треба прокрутити сторінку
+  			while (hashElement.offsetParent) {
+  				hashElementTop += hashElement.offsetTop;
+  				hashElement = hashElement.offsetParent;
+  			}
+  
+  			hashElementTop = Math.round(hashElementTop);
+  			// Викликаємо функцію для плавного скроллу
+  			smoothScroll(scrollTop, hashElementTop, this.hash);
+  		}
+  	});
+  };
+  
+  const smoothScroll = (from, to, hash) => {
+  	let timeInterval = 1,
+  		prevScrollTop,
+  		speed;
+  
+  	// Визначаємо швидкість прокрутки залежно від значень from і to
+  	if (to > from) {
+  		speed = 30;
+  	} else {
+  		speed = -30;
+  	}
+  
+  	let move = setInterval(function() {
+  		// Отримуємо поточне значення прокрутки сторінки
+  		let scrollTop = Math.round(body.scrollTop || element.scrollTop);
+  
+  		// Перевіряємо, чи досягнуто бажаного значення прокрутки або напрямок прокрутки змінився
+  		if (prevScrollTop === scrollTop || 
+                 (to > from && scrollTop >= to) || 
+                 (to < from && scrollTop <= to)) {
+  			// Очищаємо інтервал і оновлюємо URL-адресу з хешем
+  			clearInterval(move);
+  			history.replaceState(history.state, document.title, location.href.replace(/#.*$/g, '') + hash);
+  		} else {
+  			// Змінюємо значення прокрутки сторінки з врахуванням швидкості
+  			body.scrollTop += speed;
+  			element.scrollTop += speed;
+  			prevScrollTop = scrollTop;
+  		}
+  	}, timeInterval);
+  };
+  // Викликаємо функцію для обробки кліку на елемент upElem
+  calcScroll(); */
+
+  // Scrolling with Request Animation Frame
+
+  //шукаємо всі посилання,, які починаються з # (локальні посилання)
+  let links = document.querySelectorAll('[href^="#"]'),
+    speed = 0.3;
+  links.forEach(link => {
+    link.addEventListener('click', function (event) {
+      event.preventDefault();
+      let widthTop = document.documentElement.scrollTop,
+        hash = this.hash,
+        //верхня межа елемента, куди буду скролити
+        toBlock = document.querySelector(hash).getBoundingClientRect().top,
+        start = null;
+      requestAnimationFrame(step);
+      function step(time) {
+        //дізнаємося, чи перший раз запускається анімація
+        if (start === null) {
+          start = time;
+        }
+        let progress = time - start,
+          r = toBlock < 0 ? Math.max(widthTop - progress / speed, widthTop + toBlock) : Math.min(widthTop + progress / speed, widthTop + toBlock);
+        document.documentElement.scrollTo(0, r);
+
+        //функція буде сама себе рекурсивно запускати, поки не виконається умова і зупиниться анімація
+        if (r != widthTop + toBlock) {
+          requestAnimationFrame(step);
+        } else {
+          location.hash = hash;
+        }
+      }
+    });
+  });
+};
+/* harmony default export */ __webpack_exports__["default"] = (scrolling);
 
 /***/ }),
 
